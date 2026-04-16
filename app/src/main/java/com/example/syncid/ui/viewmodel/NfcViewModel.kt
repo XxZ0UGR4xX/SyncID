@@ -93,4 +93,8 @@ class NfcViewModel : ViewModel() {
     fun reportLostBracelet() {
         _currentUser.value = _currentUser.value?.copy(isBraceletBlocked = true)
     }
+
+    fun updateUserRole(role: UserRole) {
+        _currentUser.value = _currentUser.value?.copy(role = role)
+    }
 }

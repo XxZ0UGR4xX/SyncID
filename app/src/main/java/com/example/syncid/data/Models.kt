@@ -1,7 +1,7 @@
 package com.example.syncid.data
 
 enum class UserRole {
-    USUARIO, GUARDIA, ADMINISTRADOR
+    USUARIO, GUARDIA, ADMINISTRADOR, MAESTRO, ALUMNO
 }
 
 data class User(

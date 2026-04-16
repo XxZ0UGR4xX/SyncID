@@ -92,12 +92,17 @@ fun ProfileScreen(
                     icon = { Icon(Icons.Default.History, null) },
                     label = { Text(t("history")) }
                 )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = onNavigateToEmergencyScan,
-                    icon = { Icon(Icons.Default.Nfc, null) },
-                    label = { Text(t("emergency")) }
-                )
+                
+                val currentUserRole = user?.role?.name ?: "ALUMNO"
+                if (currentUserRole != "MAESTRO") {
+                    NavigationBarItem(
+                        selected = false,
+                        onClick = onNavigateToEmergencyScan,
+                        icon = { Icon(Icons.Default.Nfc, null) },
+                        label = { Text(t("emergency")) }
+                    )
+                }
+
                 NavigationBarItem(
                     selected = true,
                     onClick = { },
@@ -172,12 +177,17 @@ fun ProfileScreen(
                 icon = Icons.Default.Map,
                 onClick = { showMapDialog = true }
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            ProfileOption(
-                title = t("bracelet_settings"),
-                icon = Icons.Default.Watch,
-                onClick = onNavigateToMedicalData
-            )
+            
+            val currentUserRole = user?.role?.name ?: "USUARIO"
+            if (currentUserRole != "MAESTRO") {
+                Spacer(modifier = Modifier.height(12.dp))
+                ProfileOption(
+                    title = t("bracelet_settings"),
+                    icon = Icons.Default.Watch,
+                    onClick = onNavigateToMedicalData
+                )
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
             ProfileOption(
                 title = t("app_settings"),

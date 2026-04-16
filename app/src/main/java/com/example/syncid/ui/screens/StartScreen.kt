@@ -1,5 +1,6 @@
 package com.example.syncid.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,12 +15,9 @@ import com.example.syncid.ui.theme.AccentBlue
 import com.example.syncid.ui.theme.DarkSurface
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import com.example.syncid.ui.viewmodel.NfcViewModel
 import com.example.syncid.ui.utils.Translations
 
@@ -81,11 +79,9 @@ fun StartScreen(viewModel: NfcViewModel, onRoleSelected: (String) -> Unit, onReg
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            RoleButton("USUARIO", onRoleSelected)
+            RoleButton(t("admin_role"), onClick = { onRoleSelected("ADMINISTRADOR") })
             Spacer(modifier = Modifier.height(12.dp))
-            RoleButton("GUARDIA", onRoleSelected)
-            Spacer(modifier = Modifier.height(12.dp))
-            RoleButton("ADMINISTRADOR", onRoleSelected)
+            UserRoleDropdown(onRoleSelected, t)
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -101,13 +97,70 @@ fun StartScreen(viewModel: NfcViewModel, onRoleSelected: (String) -> Unit, onReg
 }
 
 @Composable
-fun RoleButton(role: String, onClick: (String) -> Unit) {
+fun UserRoleDropdown(onRoleSelected: (String) -> Unit, t: (String) -> String) {
+    var expanded by remember { mutableStateOf(false) }
+    val userRoles = listOf("ALUMNO", "MAESTRO", "GUARDIA")
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { expanded = true },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = DarkSurface)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(t("user_role"), fontWeight = FontWeight.Bold, color = Color.White)
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .background(DarkSurface)
+        ) {
+            userRoles.forEach { role ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            role,
+                            color = Color.White,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        onRoleSelected(role)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RoleButton(roleName: String, onClick: () -> Unit) {
     Button(
-        onClick = { onClick(role) },
-        modifier = Modifier.fillMaxWidth().height(56.dp),
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(containerColor = DarkSurface)
     ) {
-        Text(role, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(roleName, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }

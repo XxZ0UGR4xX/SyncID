@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.syncid.ui.screens.*
 import com.example.syncid.ui.viewmodel.NfcViewModel
+import com.example.syncid.data.UserRole
 
 sealed class Screen(val route: String) {
     object Start : Screen("start")
@@ -16,6 +17,7 @@ sealed class Screen(val route: String) {
     }
     object Registration : Screen("registration")
     object UserDashboard : Screen("user_dashboard")
+    object TeacherDashboard : Screen("teacher_dashboard")
     object GuardDashboard : Screen("guard_dashboard")
     object AdminDashboard : Screen("admin_dashboard")
 }
@@ -72,9 +74,22 @@ fun SyncIDNavGraph(navController: NavHostController, viewModel: NfcViewModel) {
                 role = role,
                 onLoginSuccess = {
                     val destination = when (role) {
-                        "USUARIO" -> StudentScreen.Dashboard.route
-                        "GUARDIA" -> Screen.GuardDashboard.route
-                        "ADMINISTRADOR" -> Screen.AdminDashboard.route
+                        "ALUMNO", "USUARIO" -> {
+                            viewModel.updateUserRole(UserRole.USUARIO)
+                            StudentScreen.Dashboard.route
+                        }
+                        "MAESTRO" -> {
+                            viewModel.updateUserRole(UserRole.MAESTRO)
+                            Screen.TeacherDashboard.route
+                        }
+                        "GUARDIA" -> {
+                            viewModel.updateUserRole(UserRole.GUARDIA)
+                            Screen.GuardDashboard.route
+                        }
+                        "ADMINISTRADOR" -> {
+                            viewModel.updateUserRole(UserRole.ADMINISTRADOR)
+                            Screen.AdminDashboard.route
+                        }
                         else -> StudentScreen.Dashboard.route
                     }
                     navController.navigate(destination) {
@@ -110,7 +125,10 @@ fun SyncIDNavGraph(navController: NavHostController, viewModel: NfcViewModel) {
         }
         
         composable(StudentScreen.VirtualCard.route) {
-            VirtualCardScreen(onBackClick = { navController.popBackStack() })
+            VirtualCardScreen(
+                viewModel = viewModel,
+                onBackClick = { navController.popBackStack() }
+            )
         }
         
         composable(StudentScreen.ReportLoss.route) {
@@ -157,6 +175,16 @@ fun SyncIDNavGraph(navController: NavHostController, viewModel: NfcViewModel) {
             SettingsScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
         }
         
+        composable(Screen.TeacherDashboard.route) {
+            DashboardTeacher(
+                viewModel = viewModel,
+                onNavigateToHistory = { navController.navigate(StudentScreen.History.route) },
+                onNavigateToScanner = { /* Navegar a pantalla de escáner QR */ },
+                onNavigateToEmergencyScan = { navController.navigate(StudentScreen.EmergencyScan.route) },
+                onNavigateToProfile = { navController.navigate(StudentScreen.Profile.route) }
+            )
+        }
+
         // Otras rutas
         composable(Screen.GuardDashboard.route) {
             DashboardGuardia(viewModel)
