@@ -12,6 +12,7 @@ import com.example.syncid.data.UserRole
 import com.example.teclink.ui.screens.DashboardAdmin
 
 sealed class Screen(val route: String) {
+    object Splash : Screen("splash")
     object Start : Screen("start")
     object Login : Screen("login/{role}") {
         fun createRoute(role: String) = "login/$role"
@@ -41,8 +42,18 @@ sealed class StudentScreen(val route: String) {
 fun SyncIDNavGraph(navController: NavHostController, viewModel: NfcViewModel) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Start.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(
+                onTimeout = {
+                    navController.navigate(Screen.Start.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.Start.route) {
             StartScreen(
                 viewModel = viewModel,
