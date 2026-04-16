@@ -20,6 +20,8 @@ sealed class Screen(val route: String) {
     object TeacherDashboard : Screen("teacher_dashboard")
     object GuardDashboard : Screen("guard_dashboard")
     object AdminDashboard : Screen("admin_dashboard")
+    object AttendanceScanner : Screen("attendance_scanner")
+    object AttendanceList : Screen("attendance_list")
 }
 
 sealed class StudentScreen(val route: String) {
@@ -179,9 +181,24 @@ fun SyncIDNavGraph(navController: NavHostController, viewModel: NfcViewModel) {
             DashboardTeacher(
                 viewModel = viewModel,
                 onNavigateToHistory = { navController.navigate(StudentScreen.History.route) },
-                onNavigateToScanner = { /* Navegar a pantalla de escáner QR */ },
+                onNavigateToScanner = { navController.navigate(Screen.AttendanceScanner.route) },
                 onNavigateToEmergencyScan = { navController.navigate(StudentScreen.EmergencyScan.route) },
                 onNavigateToProfile = { navController.navigate(StudentScreen.Profile.route) }
+            )
+        }
+
+        composable(Screen.AttendanceScanner.route) {
+            AttendanceScannerScreen(
+                onBackClick = { navController.popBackStack() },
+                onNavigateToFullList = { navController.navigate(Screen.AttendanceList.route) },
+                viewModel = viewModel
+            )
+        }
+
+        composable(Screen.AttendanceList.route) {
+            AttendanceListScreen(
+                onBackClick = { navController.popBackStack() },
+                viewModel = viewModel
             )
         }
 
