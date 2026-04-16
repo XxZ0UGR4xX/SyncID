@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "669183349130",
+    "project_id": "teclink-19693",
+    "storage_bucket": "teclink-19693.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669183349130:android:10e910819ce85074f0b873",
+        "android_client_info": {
+          "package_name": "com.example.syncid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRdXjsNi2fiQLJKpwenZgYFBvSv6ufaaM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
