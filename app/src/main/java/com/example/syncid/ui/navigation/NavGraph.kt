@@ -9,7 +9,6 @@ import androidx.navigation.navArgument
 import com.example.syncid.ui.screens.*
 import com.example.syncid.ui.viewmodel.NfcViewModel
 import com.example.syncid.data.UserRole
-import com.example.teclink.ui.screens.DashboardAdmin
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")

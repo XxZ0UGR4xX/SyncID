@@ -1,4 +1,4 @@
-package com.example.teclink.ui.screens
+package com.example.syncid.ui.screens
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
