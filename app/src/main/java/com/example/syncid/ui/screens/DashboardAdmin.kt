@@ -58,8 +58,8 @@ fun DashboardAdmin() {
 
     when (pantallaActual) {
         "dashboard" -> MainDashboardContent(onNavigate = { pantallaActual = it })
-        //"directorio" -> DirectorioAlumnosScreen(onBack = { pantallaActual = "dashboard" })
-        //"pulseras" -> GestionPulserasScreen(onBack = { pantallaActual = "dashboard" })
+        "directorio" -> DirectorioAlumnosScreen(onBack = { pantallaActual = "dashboard" })
+        "pulseras" -> GestionPulserasScreen(onBack = { pantallaActual = "dashboard" })
         "reportes" -> ReportesSeguridadScreen(onBack = { pantallaActual = "dashboard" })
     }
 }
@@ -111,6 +111,158 @@ fun MainDashboardContent(onNavigate: (String) -> Unit) {
         }
     }
 }
+
+// --- pantalla 2: directorio ---
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DirectorioAlumnosScreen(onBack: () -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+    var nombre by remember { mutableStateOf("") }
+    var control by remember { mutableStateOf("") }
+    var sangre by remember { mutableStateOf("") }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Nuevo Alumno") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(value = nombre, onValueChange = { nombre = it }, label = { Text("Nombre") })
+                    OutlinedTextField(value = control, onValueChange = { control = it }, label = { Text("No. Control") })
+                    OutlinedTextField(value = sangre, onValueChange = { sangre = it }, label = { Text("Tipo de Sangre") })
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    if (nombre.isNotBlank()) {
+                        listaAlumnosGlobal.add(Alumno(nombre, control, sangre, true))
+                        showDialog = false; nombre = ""; control = ""; sangre = ""
+                    }
+                }) { Text("Añadir") }
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Directorio") }, navigationIcon = {
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+            })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showDialog = true }, containerColor = AccentBlue) {
+                Icon(Icons.Default.Add, null, tint = Color.White)
+            }
+        }
+    ) { padding ->
+        LazyColumn(Modifier.padding(padding).padding(16.dp)) {
+            items(listaAlumnosGlobal) { alumno ->
+                Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), colors = CardDefaults.cardColors(containerColor = DarkSurface)) {
+                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(alumno.nombre, fontWeight = FontWeight.Bold)
+                            Text("Control: ${alumno.control}", fontSize = 12.sp, color = Color.Gray)
+                        }
+                        Badge(containerColor = if (alumno.pulseraActiva) SuccessGreen else Color.Red) {
+                            Text(if (alumno.pulseraActiva) "ACTIVA" else "INACTIVA", Modifier.padding(4.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// --- pantalla 3: gestion de pulseras ---
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GestionPulserasScreen(onBack: () -> Unit) {
+    var pulseraAEditar by remember { mutableStateOf<Pulsera?>(null) }
+    val opcionesEstado = listOf("Disponible", "Asignada", "Dañada", "Perdida")
+
+    if (pulseraAEditar != null) {
+        var expanded by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            onDismissRequest = { pulseraAEditar = null },
+            title = { Text("Actualizar Pulsera") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedTextField(
+                        value = pulseraAEditar!!.codigo,
+                        onValueChange = { pulseraAEditar = pulseraAEditar!!.copy(codigo = it) },
+                        label = { Text("ID de Pulsera") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Menú desplegable para el estado
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        OutlinedTextField(
+                            value = pulseraAEditar!!.estado,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Estado de Asignación") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth()
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            opcionesEstado.forEach { opcion ->
+                                DropdownMenuItem(
+                                    text = { Text(opcion) },
+                                    onClick = {
+                                        pulseraAEditar = pulseraAEditar!!.copy(estado = opcion)
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val index = listaPulserasGlobal.indexOfFirst { it.id == pulseraAEditar!!.id }
+                    if (index != -1) listaPulserasGlobal[index] = pulseraAEditar!!
+                    pulseraAEditar = null
+                }) { Text("Guardar Cambios") }
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Gestión de Pulseras") }, navigationIcon = {
+                IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+            })
+        }
+    ) { padding ->
+        LazyColumn(Modifier.padding(padding).padding(16.dp)) {
+            items(listaPulserasGlobal) { pulsera ->
+                Card(
+                    Modifier.fillMaxWidth().padding(vertical = 4.dp).clickable { pulseraAEditar = pulsera },
+                    colors = CardDefaults.cardColors(containerColor = DarkSurface)
+                ) {
+                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(pulsera.codigo, fontWeight = FontWeight.Bold)
+                            Text("Estado: ${pulsera.estado}", color = Color.Gray, fontSize = 13.sp)
+                        }
+                        IconButton(onClick = { listaPulserasGlobal.remove(pulsera) }) {
+                            Icon(Icons.Default.Delete, null, tint = Color.Red)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 
 // --- pantalla 4: reportes ---
