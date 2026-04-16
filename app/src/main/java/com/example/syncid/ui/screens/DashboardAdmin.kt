@@ -58,8 +58,8 @@ fun DashboardAdmin() {
 
     when (pantallaActual) {
         "dashboard" -> MainDashboardContent(onNavigate = { pantallaActual = it })
-        //"directorio" -> DirectorioAlumnosScreen(onBack = { pantallaActual = "dashboard" })
-        //"pulseras" -> GestionPulserasScreen(onBack = { pantallaActual = "dashboard" })
+        "directorio" -> DirectorioAlumnosScreen(onBack = { pantallaActual = "dashboard" })
+        "pulseras" -> GestionPulserasScreen(onBack = { pantallaActual = "dashboard" })
         "reportes" -> ReportesSeguridadScreen(onBack = { pantallaActual = "dashboard" })
     }
 }
