@@ -8,7 +8,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.teclink" />
+                  <option name="appId" value="com.example.syncid" />
                   <option name="mobileSdkAppId" value="1:669183349130:android:10e910819ce85074f0b873" />
                   <option name="projectId" value="teclink-19693" />
                   <option name="projectNumber" value="669183349130" />
